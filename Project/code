@@ -1,0 +1,114 @@
+
+import pandas as pd
+import numpy as np
+import re
+import joblib
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+import warnings
+warnings.simplefilter("ignore")
+# Dataset with removed duplicates and a few added examples
+data = pd.DataFrame({
+    'Text': [
+        # English
+        "I love programming in Python.",
+        "This is a beautiful day.",
+        "Natural language processing is fun.",
+        "Can we meet tomorrow?",
+        # French
+        "J'adore programmer en Python.",
+        "C'est une belle journée.",
+        "Le traitement du langage naturel est amusant.",
+        "Comment allez-vous?",
+        # Spanish
+        "Me encanta programar en Python.",
+        "Es un día hermoso.",
+        "El procesamiento del lenguaje natural es divertido.",
+        "¿Cómo estás?",
+        # German
+        "Ich liebe es, in Python zu programmieren.",
+        "Dies ist ein schöner Tag.",
+        "Die Verarbeitung natürlicher Sprache macht Spaß.",
+        "Wie geht es dir?",
+        # Hindi
+        "मुझे पायथन में प्रोग्रामिंग करना पसंद है।",
+        "आज का दिन सुन्दर है।",
+        "प्राकृतिक भाषा प्रोसेसिंग मज़ेदार है।",
+        "आप कैसे हैं?",
+        # Tamil
+        "நான் பைத்தான் மொழியில் நிரலாக்கத்தை விரும்புகிறேன்.",
+        "இன்று ஒரு அழகான நாள்.",
+        "நீங்கள் எப்படி இருக்கிறீர்கள்?",
+        # Telugu
+        "నేను పythonను ప్రోగ్రామ్ చేయడం ఇష్టం.",
+        "ఇది ఒక అందమైన రోజు.",
+        "మీరు ఎలా ఉన్నారు?",
+        # Urdu
+        "مجھے پروگرامنگ پسند ہے",
+        "یہ ایک خوبصورت دن ہے",
+        "آپ کیسے ہیں؟"
+    ],
+    'Language': [
+        'english', 'english', 'english', 'english',
+        'french', 'french', 'french', 'french',
+        'spanish', 'spanish', 'spanish', 'spanish',
+        'german', 'german', 'german', 'german',
+        'hindi', 'hindi', 'hindi', 'hindi',
+        'tamil', 'tamil', 'tamil',
+        'telugu', 'telugu', 'telugu',
+        'urdu', 'urdu', 'urdu'
+    ]
+})
+# Preprocessing
+def preprocess_text(text):
+    text = re.sub(r'[!@#$(),\n"%^*?:;~`0-9]', ' ', text)
+    text = re.sub(r'\[.*?\]', ' ', text)
+    return text.lower()
+data['Text'] = data['Text'].apply(preprocess_text)
+# TF-IDF with char n-grams
+vectorizer = TfidfVectorizer(analyzer='char', ngram_range=(1, 3))  # better for short texts
+X = vectorizer.fit_transform(data['Text'])
+# Encode labels
+label_encoder = LabelEncoder()
+y = label_encoder.fit_transform(data['Language'])
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Train the model
+model = MultinomialNB()
+model.fit(X_train, y_train)
+# Evaluate
+y_pred = model.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+print(f"\nAccuracy: {accuracy:.2f}")
+print("\nClassification Report:")
+# Get the unique classes present in y_test and map them back to original language names
+# This ensures target_names matches the classes actually present in the test set
+unique_classes_in_test = np.unique(np.concatenate((y_test, y_pred)))
+target_names_for_report = label_encoder.inverse_transform(unique_classes_in_test)
+print(classification_report(y_test, y_pred, target_names=target_names_for_report, labels=unique_classes_in_test)) # Also specify labels
+# Confusion Matrix
+# Save model
+joblib.dump(model, 'language_model.pkl')
+joblib.dump(vectorizer, 'vectorizer.pkl')
+joblib.dump(label_encoder, 'label_encoder.pkl')
+# Prediction function
+def predict_language(text):
+    processed = preprocess_text(text)
+    vec = vectorizer.transform([processed])
+    pred = model.predict(vec)
+    return label_encoder.inverse_transform(pred)[0]
+# User input loop
+print("\nSupported languages: " + ", ".join(label_encoder.classes_))
+while True:
+    user_input = input("\nEnter a sentence (or 'exit' to quit): ")
+    if user_input.lower() == 'exit':
+        print("Exiting...")
+        break
+    result = predict_language(user_input)
+    print(f"Predicted Language: {result}")
