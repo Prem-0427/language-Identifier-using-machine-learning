@@ -1,0 +1,60 @@
+Aim:-
+To build a machine learning model that can identify the language of a given text input using character-level features and a Naive Bayes classifier.
+Abstract:-
+•	In today’s digital era, where communication spans across diverse languages and cultures, the automatic identification of a language from a piece of text plays a crucial role in many applications such as content moderation, machine translation, multilingual chatbots, and intelligent search engines. This project focuses on the implementation of a machine learning-based system for automatic language identification using Python and scikit-learn. The system is designed to classify a given sentence into one of several supported languages including English, French, Spanish, German, Hindi, Tamil, Telugu, and Urdu.
+•	The approach uses character-level n-gram features, extracted via the Term Frequency-Inverse Document Frequency (TF-IDF) method. This allows the model to capture subtle linguistic cues such as script patterns and morphological structures that are characteristic of each language. The classification model is built using the Multinomial Naive Bayes algorithm, which is well-suited for text classification tasks due to its efficiency and performance on high-dimensional feature spaces.
+•	The training dataset consists of manually labeled multilingual sentences representing everyday usage in different languages. The text data is preprocessed to remove noise and standardize input. The model is trained and evaluated using standard machine learning techniques including train-test splitting, performance measurement through accuracy and classification reports, and visualization of confusion matrices to analyze misclassifications.
+•	Upon evaluation, the system achieves a good level of accuracy on the test data, demonstrating its effectiveness even with a relatively small dataset. Additionally, a real-time prediction function is implemented, allowing users to input any sentence and receive an immediate language prediction.
+•	This project illustrates the power of natural language processing (NLP) and supervised learning in solving real-world linguistic problems. It also lays the groundwork for further enhancements such as supporting more languages, increasing dataset size, and incorporating deep learning models for improved accuracy.
+
+Working Principle:-
+The project works in several stages:
+1. Data Collection: 
+o	A small dataset of multilingual sentences is manually curated.
+2. Text Preprocessing:
+o	Sentences are cleaned by removing special characters and converting to lowercase.
+3. Feature Extraction:
+o	Text data is converted into numeric vectors using TF-IDF (Term Frequency-Inverse Document Frequency) with character-level n-grams (1 to 3).
+4. Model Training: 
+o	A Multinomial Naive Bayes model is trained on the features to learn patterns for each language.
+5. Evaluation: 
+o	The model is evaluated using metrics like accuracy, classification report, and confusion matrix.
+6. Prediction: 
+o	A user can input any sentence, and the system predicts its language using the trained model.
+
+Process Flow:-
+1. Import Libraries: Required modules such as sklearn, pandas, re, joblib, etc., are imported.
+2. Dataset Creation: Sentences in various languages are added to a DataFrame.
+3. Text Preprocessing: Remove punctuations, numbers, and special characters. Convert all text to lowercase.
+4. TF-IDF Vectorization: Use character-level n-grams (1–3) to capture language-specific patterns.
+5. Label Encoding: Convert text labels (language names) into numeric values.
+6. Train-Test Split: Data is split into training and testing sets (80:20).
+7. Model Training: Train a MultinomialNB classifier on training data.
+8. Model Evaluation: Display accuracy, classification report, and confusion matrix.
+9. Model Saving: Save the model, vectorizer, and label encoder using joblib.
+10. Real-time Prediction: The user can input any sentence, and the model predicts its language.
+
+Flow of Algorithm:-
+
+
+Start
+↓
+Input labeled text dataset (Text + Language)
+↓
+Preprocess the text (remove punctuation, lowercase)
+↓
+Apply TF-IDF Vectorization (char-level n-grams)
+↓
+Encode language labels
+↓
+Split dataset into training and testing sets
+↓
+Train Multinomial Naive Bayes model
+↓
+Evaluate model with accuracy, classification report, and confusion matrix
+↓
+Save the model, vectorizer, and label encoder using joblib
+↓
+Take user input and predict language using trained model
+↓
+End
